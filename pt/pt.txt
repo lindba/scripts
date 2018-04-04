@@ -1,4 +1,0 @@
-> join: clustering, extended stats, bitmap ind, correct cardinality estimate 
-> ind range scan: reduce clustering factor
-
-
