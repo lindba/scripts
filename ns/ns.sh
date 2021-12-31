@@ -4,7 +4,7 @@ nsi=$1; act=$2; ns=$nsi;
 cln(){ ip link set dev $nsc down; ip link set dev $nsh down; ip link delete $nsc; ip link delete $nsh; ip netns delete $ns
  umount -fl /run/netns; for mp in /var/run/netns/$ns; do umount -fl $mp; done; #$(df -ha | grep $ns| grep -v /$ns| tr -s ' ' | cut -d ' ' -f6| sort -r)
  mv /var/run/netns/$ns /var/run/netns/$ns$(date +"%Y%m%d_%H%M%S"); # Error: Peer netns reference is invalid
- pkill -f "/run/sshd-$ns.pid"; umount -fl $nsm/proc $nsm/sys $nsm/sys/kernel/debug $nsm/dev $nsm/dev/pts $nsm/var $nsm/var/run/netns/$ns $nsm; }
+ pkill -f "/run/sshd-$ns.pid"; if [[ $act != puip ]]; then umount -fl $nsm/proc $nsm/sys $nsm/sys/kernel/debug $nsm/dev $nsm/dev/pts $nsm/var $nsm/var/run/netns/$ns $nsm; fi; }
 
 ntns(){ ip link add $nsh type veth peer name $nsc address $nscMac;    #veth
  #doc: ip link add $nsc link $nsh type macvlan mode passthru;  #passthru
@@ -26,7 +26,7 @@ pvr(){ ntns; [[ $act != puip ]] && mnt; ipt; cd $nsm;
  #doc ip netns exec $ns /usr/sbin/sshd -D &   #doc: for only nw ns, systemd of host works
  #doc: for mount ns
  #doc: ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/lib/systemd/systemd --system
- ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
+ [[ $act != puip ]] && rt="--root $nsm"; ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork $rt /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
  #ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /bin/bash
 <<tmp
  ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork /bin/bash - <<pvr
@@ -55,4 +55,3 @@ cld
  *) ns=$nsi; . /tmp/ns.fn; pvr; ;;   #doc(cld): rt cidr of ns to host vm
  #cln 2>/dev/null;
 esac;
-
