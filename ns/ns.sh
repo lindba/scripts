@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -x
+#!/usr/bin/env -S bash
 
 nsi=$1; act=$2; ns=$nsi;
 cln(){ ip link set dev $nsc down; ip link set dev $nsh down; ip link delete $nsc; ip link delete $nsh; ip netns delete $ns
@@ -38,7 +38,7 @@ pvr
 tmp
 }
 
-ipt() { echo 1 > /proc/sys/net/ipv4/ip_forward; iptables -t nat -A PREROUTING  -p tcp -j DNAT  --destination $instIp --to-destination $ip; #iptables -t nat -A POSTROUTING -j MASQUERADE; }    #iptables -A FORWARD -i $brns -o $instIfc -j ACCEPT; }
+ipt() { echo 1 > /proc/sys/net/ipv4/ip_forward; iptables -t nat -A PREROUTING  -p tcp -j DNAT  --destination $instIp --to-destination $ip; }   #iptables -t nat -A POSTROUTING -j MASQUERADE; iptables -A FORWARD -i $brns -o $instIfc -j ACCEPT; }
 #ipt() { echo 1 > /proc/sys/net/ipv4/ip_forward; iptables -t nat -A POSTROUTING -o $instIfc  -j MASQUERADE; iptables -A FORWARD -i $brns -o $instIfc -j ACCEPT;
 # ip addr replace $instIp/$instPfx dev $instIfc:$instIfcIdx; iptables -t nat -A PREROUTING  -p tcp -j DNAT  --destination $instIp --to-destination $ip; }
 #enbr(){ echo 1 > /proc/sys/net/ipv4/ip_forward; instGw=$(ip route|head -1 | cut -d' ' -f3); ip link set $instIfc master $brns; ip addr flush dev $instIfc; ip link set $instIfc master $brns; ip addr flush dev $instIfc; ip route add default via $instGw; }
