@@ -1,4 +1,5 @@
-#!/usr/bin/env -S bash
+#!/bin/bash
+#/usr/bin/env -S bash -x
 
 nsi=$1; act=$2; ns=$nsi;
 cln(){ ip link set dev $nsc down; ip link set dev $nsh down; ip link delete $nsc; ip link delete $nsh; ip netns delete $ns
@@ -55,3 +56,4 @@ cld
  *) ns=$nsi; . /tmp/ns.fn; pvr; ;;   #doc(cld): rt cidr of ns to host vm
  #cln 2>/dev/null;
 esac;
+
