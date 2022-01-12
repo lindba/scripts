@@ -28,7 +28,7 @@ pvr(){ ntns; [[ $act = puip ]] && ipt || mnt; cd $nsm;
  #doc ip netns exec $ns /usr/sbin/sshd -D &   #doc: for only nw ns, systemd of host works
  #doc: for mount ns
  #doc: ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/lib/systemd/systemd --system
- uname -r | grep ^5; if [[ $? == 0 ]]; then ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
+  unshare --help | grep '\-\-root'; if [[ $? == 0 ]]; then ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
  else #ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /bin/bash
   ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork /bin/bash - <<pvr
    pivot_root . $nsm;  echo $ns > /proc/sys/kernel/hostname;
