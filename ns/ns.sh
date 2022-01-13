@@ -28,12 +28,13 @@ pvr(){ ntns; [[ $act = puip ]] && ipt || mnt; cd $nsm;
  #doc ip netns exec $ns /usr/sbin/sshd -D &   #doc: for only nw ns, systemd of host works
  #doc: for mount ns
  #doc: ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/lib/systemd/systemd --system
-  unshare --help | grep '\-\-root'; if [[ $? == 0 ]]; then ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
+ unshare --help | grep '\-\-root';
+ if [[ $? == 0 ]]; then [[ $act = puip ]] && nrc="--root $nsm"; ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork $nrc /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
  else #ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /bin/bash
   ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork /bin/bash - <<pvr
-   pivot_root . $nsm;  echo $ns > /proc/sys/kernel/hostname;
-   mount debugfs  /sys/kernel/debug -t debugfs;  #doc: for USB
+  if [[ $act != puip ]]; then pivot_root . $nsm;  echo $ns > /proc/sys/kernel/hostname; mount debugfs  /sys/kernel/debug -t debugfs;  #doc: for USB
    cd /; mount -t sysfs sysfs sys; mount -t proc proc proc/; #t exec /usr/lib/systemd/systemd;  #tested with fedora 34, did !work with OL7
+  fi;
    /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -o ListenAddress=$ip;  #!systemd
 pvr
  fi;
@@ -56,4 +57,3 @@ cld
  *) ns=$nsi; . /tmp/ns.fn; pvr; ;;   #doc(cld): rt cidr of ns to host vm
  #cln 2>/dev/null;
 esac;
-
