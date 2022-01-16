@@ -30,7 +30,7 @@ pvr(){ ntns; [[ $act = nsn ]] && ipt || mnt; cd $nsm;
  #doc: for mount ns
  #doc: ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /usr/lib/systemd/systemd --system
  ns1="netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork ";
- if [[ $act == sysd ]]; then ip $ns1 --root $nsm /usr/lib/systemd/systemd --system;    #expt: selinux permissive on host & ns
+ if [[ $act == sysd ]]; then ip $ns1 --root $nsm /usr/lib/systemd/systemd --system & ip netns exec $ns journalctl -k -b -f;    #expt: selinux permissive on host & ns
  else unshare --help | grep '\-\-root'; if [[ $? == 0 ]]; then [[ $act != nsn ]] && nrc="--root $nsm"; ip $ns1 $nrc /usr/sbin/sshd -D -o PidFile=/run/sshd-$ns.pid -E /tmp/sshd.log -o ListenAddress=$ip;
   else #ip netns exec $ns unshare --mount --uts --ipc --mount-proc=/proc --pid --fork --root $nsm /bin/bash
    ip $ns1 /bin/bash - <<pvr
