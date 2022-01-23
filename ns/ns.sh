@@ -23,7 +23,7 @@ mnt(){ mkdir -p $nsm; mount --make-rprivate /; mount --make-shared -o bind $nsr 
  for dir in inst  kom  tmp  vm; do mount --rbind /data/$dir $nsm/data/$dir; done; for hsDir in chintangsha dtb; do  mount --rbind /data/.hs/$hsDir $nsm/data/.hs/$hsDir; done; #home:
 }
 
-pvr(){ ntns; [[ $act = nsn ]] && ipt || mnt; cd $nsm; 
+pvr(){ ntns; ipt; [[ a$act != ansn ]] && mnt; cd $nsm;  
  #doc:  !privd: as db user unshare --map-root-user ...
  #systemctl,try:  mount --bind /proc/self/ns/net /var/run/netns/$ns; 
  #doc ip netns exec $ns /usr/sbin/sshd -D &   #doc: for only nw ns, systemd of host works
